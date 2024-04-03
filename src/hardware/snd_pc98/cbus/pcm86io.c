@@ -1,4 +1,4 @@
-#include    "np2glue.h"
+﻿#include    "np2glue.h"
 #include	"pcm86io.h"
 #include	"sound.h"
 #include	"fmboard.h"
