@@ -127,6 +127,9 @@
     <Filter Include="Sources\hardware\RetroWaveLib">
       <UniqueIdentifier>{2a582629-0964-4559-9992-810e70c2f6ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\hardware\c86ctl">
+      <UniqueIdentifier>{e1e64aef-1f0b-4164-905a-ee6c625e11c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\aviwriter\avi_rw_iobuf.cpp">
@@ -2608,6 +2611,9 @@
     </ClInclude>
     <ClInclude Include="..\include\version_string.h" />
     <ClInclude Include="..\src\hardware\esfmu\esfm.h" />
+    <ClInclude Include="..\src\hardware\c86ctl\c86ctl.h">
+      <Filter>Sources\hardware\c86ctl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\winres.rc">

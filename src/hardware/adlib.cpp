@@ -37,6 +37,7 @@
 #include "opl2board/opl2board.h"
 #include "opl3duoboard/opl3duoboard.h"
 #include "esfmu/esfm.h"
+#include "c86ctl/c86ctl.h"
 
 #define RETROWAVE_USE_BUFFER
 #include "RetroWaveLib/RetroWave_DOSBoX.hpp"
@@ -587,6 +588,83 @@ namespace Retrowave_OPL3 {
 			retrowave_opl3_reset(&retrowave_global_context);
 		}
 	};
+}
+
+namespace c86ctl_opl3 {
+struct Handler : public Adlib::Handler {
+    HMODULE hmod = nullptr;
+    HRESULT(WINAPI* CreateInstance)(REFIID riid, void** ppi) = nullptr;
+    c86ctl::IRealChipBase* baseif = nullptr;
+    c86ctl::IRealChip3* chipif = nullptr;
+
+    void WriteReg(uint32_t reg, uint8_t val) override {
+        if (!chipif) return;
+        chipif->out(reg, val);
+    }
+
+    uint32_t WriteAddr(uint32_t port, uint8_t val) override {
+
+        switch(port & 3) {
+        case 0:
+            return val;
+        case 2:
+            return 0x100 | val;
+        }
+
+        return 0;
+    }
+
+    void Generate(MixerChannel* chan, Bitu samples) override {
+    }
+
+    void Init(Bitu rate) override {
+        if (!chipif) return;
+        chipif->reset();
+    }
+
+    Handler() {
+        hmod = ::LoadLibrary(TEXT("c86ctl.dll"));
+        if (!hmod) return;
+
+        INT_PTR proc = (INT_PTR)GetProcAddress(hmod, "CreateInstance");
+        if (proc == NULL) return;
+
+        *((INT_PTR*)&this->CreateInstance) = proc;
+
+        HRESULT hr = this->CreateInstance(c86ctl::IID_IRealChipBase, (void**)&baseif);
+        if (FAILED(hr)) return;
+
+        baseif->initialize();
+
+        int nchips = baseif->getNumberOfChip();
+
+        for (int i = 0; i < nchips; i++) {
+            c86ctl::IRealChip3* cif = nullptr;
+
+            hr = baseif->getChipInterface(i, c86ctl::IID_IRealChip3, (void**)&cif);
+            if (FAILED(hr)) continue;
+
+            c86ctl::ChipType ctype;
+            cif->getChipType(&ctype);
+            if (ctype == c86ctl::CHIP_OPL3) {
+                chipif = cif;
+                break;
+            } else {
+                cif->Release();
+            }
+        }
+    }
+
+    ~Handler() {
+        if (chipif) {
+            chipif->Release();
+        }
+        if (baseif) {
+            baseif->deinitialize();
+            baseif->Release();
+        }
+    }
+};
 }
 
 #define RAW_SIZE 1024
@@ -1448,6 +1526,9 @@ Module::Module( Section* configuration ) : Module_base(configuration) {
 		// ESFMu only supports 49716 Hz sample rate, override it here.
 		rate = 49716;
 	}
+    else if (oplemu == "c86ctl") {
+        handler = new c86ctl_opl3::Handler();
+    }
 	//Fall back to dbop, will also catch auto
 	else if (oplemu == "fast" || 1) {
 		const bool opl3Mode = oplmode >= OPL_opl3;
