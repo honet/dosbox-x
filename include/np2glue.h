@@ -1,4 +1,4 @@
-/* The purpose of this header is to provide defines and macros
+﻿/* The purpose of this header is to provide defines and macros
  * to help port code from Neko Project II and match the typedefs
  * it uses. */
 
@@ -175,7 +175,7 @@ static inline void _TRACEOUT(const char *fmt,...) { };
 #endif
 
 typedef struct {
-	// G~[gÉæ­QÆ³êéz
+	// エミュレート中によく参照される奴
 	UINT8	uPD72020;
 	UINT8	DISPSYNC;
 	UINT8	RASTER;
@@ -196,7 +196,7 @@ typedef struct {
 	UINT8	usefd144;
 	UINT8	wait[6];
 
-	// ZbgÆ© ñÜèQÆ³êÈ¢z
+	// リセット時とかあんまり参照されない奴
 	OEMCHAR	model[8];
 	UINT	baseclock;
 	UINT	multiple;
