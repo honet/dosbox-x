@@ -21,6 +21,8 @@
 #include "regs.h"
 #include "mixer.h"
 #include "callback.h"
+#include "c86ctl/c86ctlwrap.h"
+#include "board_ext.h"
 
 #include <assert.h>
 #include <string.h>
@@ -469,6 +471,9 @@ void PC98_FM_OnEnterPC98(Section *sec) {
         pcm86gen_initialize(rate);
         pcm86gen_setvol(pccore.vol_pcm);
 
+        std::string emu = pc98_section->Get_string("pc-98 fm emu");
+
+        UINT32 boardtype = 0;
         if (board == "board86c" || board == "auto") {
             if (baseio == 0 || baseio == 0x188) { /* default */
                 pccore.snd86opt |= 0x01;
@@ -481,7 +486,7 @@ void PC98_FM_OnEnterPC98(Section *sec) {
             pccore.snd86opt += board86_encodeirqidx(fmirqidx);
 
             LOG_MSG("PC-98 FM board is PC-9801-86c at baseio=0x%x irq=%d",baseio,fmtimer_index2irq(fmirqidx));
-            fmboard_reset(&np2cfg, 0x14);
+            boardtype = 0x14;
         }
         else if (board == "board86") {
             if (baseio == 0 || baseio == 0x188) { /* default */
@@ -495,7 +500,7 @@ void PC98_FM_OnEnterPC98(Section *sec) {
             pccore.snd86opt += board86_encodeirqidx(fmirqidx);
 
             LOG_MSG("PC-98 FM board is PC-9801-86 at baseio=0x%x irq=%d",baseio,fmtimer_index2irq(fmirqidx));
-            fmboard_reset(&np2cfg, 0x04);
+            boardtype = 0x04;
         }
         else if (board == "board26k") {
             if (baseio == 0x188) {
@@ -509,13 +514,13 @@ void PC98_FM_OnEnterPC98(Section *sec) {
             pccore.snd26opt += board26k_encodeirqidx(fmirqidx);
 
             LOG_MSG("PC-98 FM board is PC-9801-26k at baseio=0x%x irq=%d",baseio,fmtimer_index2irq(fmirqidx));
-            fmboard_reset(&np2cfg, 0x02);
+            boardtype = 0x02;
         }
         else if (board == "board14") {
             /* Apparently board14 is always IRQ 12, port 88h */
             LOG_MSG("PC-98 FM board is PC-9801-14 at baseio=0x%x irq=%d",0x88,12);
             LOG_MSG("WARNING: This is not yet implemented!"); // board14 emulation requires emulation of a PIT timer (8253) on the board itself
-            fmboard_reset(&np2cfg, 0x01);
+            boardtype = 0x01;
         }
         else {
             if (baseio == 0 || baseio == 0x188) { /* default */
@@ -529,10 +534,20 @@ void PC98_FM_OnEnterPC98(Section *sec) {
             pccore.snd86opt += board86_encodeirqidx(fmirqidx);
 
             LOG_MSG("PC-98 FM board is PC-9801-86c at baseio=0x%x irq=%d",baseio,fmtimer_index2irq(fmirqidx));
-            fmboard_reset(&np2cfg, 0x14);   // board86c, a good default
+            boardtype = 0x14;
         }
 
-        fmboard_bind();
+        fmboard_reset(&np2cfg, boardtype);
+        if (emu == "c86ctl") {
+            if (boardtype == 0x02) {
+                board26_c86ctl_bind();
+            } else if (boardtype == 0x04 || boardtype == 0x14) {
+                board86_c86ctl_bind();
+            }
+        } else {
+            fmboard_bind();
+        }
+
         // Set sound ID
         pcm86io_setid(baseio);
 
@@ -545,7 +560,13 @@ void PC98_FM_OnEnterPC98(Section *sec) {
 
     if (was_pc98fm_init) {
         fmboard_on_reset();
-        fmboard_bind(); // FIXME: Re-binds I/O ports as well
+
+    	std::string emu = pc98_section->Get_string("pc-98 fm emu");
+        if (emu == "c86ctl") {
+            board_c86ctl_reset();
+        } else {
+            fmboard_bind(); // FIXME: Re-binds I/O ports as well
+        }
     }
 }
 

@@ -37,7 +37,7 @@
 #include "opl2board/opl2board.h"
 #include "opl3duoboard/opl3duoboard.h"
 #include "esfmu/esfm.h"
-#include "c86ctl/c86ctl.h"
+#include "c86ctl/c86ctlwrap.h"
 
 #define RETROWAVE_USE_BUFFER
 #include "RetroWaveLib/RetroWave_DOSBoX.hpp"
@@ -592,9 +592,6 @@ namespace Retrowave_OPL3 {
 
 namespace c86ctl_opl3 {
 struct Handler : public Adlib::Handler {
-    HMODULE hmod = nullptr;
-    HRESULT(WINAPI* CreateInstance)(REFIID riid, void** ppi) = nullptr;
-    c86ctl::IRealChipBase* baseif = nullptr;
     c86ctl::IRealChip3* chipif = nullptr;
 
     void WriteReg(uint32_t reg, uint8_t val) override {
@@ -623,45 +620,13 @@ struct Handler : public Adlib::Handler {
     }
 
     Handler() {
-        hmod = ::LoadLibrary(TEXT("c86ctl.dll"));
-        if (!hmod) return;
-
-        INT_PTR proc = (INT_PTR)GetProcAddress(hmod, "CreateInstance");
-        if (proc == NULL) return;
-
-        *((INT_PTR*)&this->CreateInstance) = proc;
-
-        HRESULT hr = this->CreateInstance(c86ctl::IID_IRealChipBase, (void**)&baseif);
-        if (FAILED(hr)) return;
-
-        baseif->initialize();
-
-        int nchips = baseif->getNumberOfChip();
-
-        for (int i = 0; i < nchips; i++) {
-            c86ctl::IRealChip3* cif = nullptr;
-
-            hr = baseif->getChipInterface(i, c86ctl::IID_IRealChip3, (void**)&cif);
-            if (FAILED(hr)) continue;
-
-            c86ctl::ChipType ctype;
-            cif->getChipType(&ctype);
-            if (ctype == c86ctl::CHIP_OPL3) {
-                chipif = cif;
-                break;
-            } else {
-                cif->Release();
-            }
-        }
+        C86CTLWrap::GetInstance()->Initialize();
+        C86CTLWrap::GetInstance()->QueryChipIF(c86ctl::CHIP_OPL3, &chipif);
     }
 
     ~Handler() {
         if (chipif) {
             chipif->Release();
-        }
-        if (baseif) {
-            baseif->deinitialize();
-            baseif->Release();
         }
     }
 };

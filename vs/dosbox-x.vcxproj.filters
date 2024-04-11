@@ -1655,6 +1655,12 @@
     <ClCompile Include="..\src\builtin\ne2000bin.cpp">
       <Filter>Sources\builtin</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\hardware\c86ctl\c86ctlwrap.cpp">
+      <Filter>Sources\hardware\c86ctl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hardware\snd_pc98\cbus\board_ext.cpp">
+      <Filter>Sources\hardware\snd_pc98\cbus</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\aviwriter\avi.h">
@@ -2613,6 +2619,15 @@
     <ClInclude Include="..\src\hardware\esfmu\esfm.h" />
     <ClInclude Include="..\src\hardware\c86ctl\c86ctl.h">
       <Filter>Sources\hardware\c86ctl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hardware\c86ctl\c86ctlwrap.h">
+      <Filter>Sources\hardware\c86ctl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hardware\c86ctl\cbus_boardtype.h">
+      <Filter>Sources\hardware\c86ctl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hardware\snd_pc98\cbus\board_ext.h">
+      <Filter>Sources\hardware\snd_pc98\cbus</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

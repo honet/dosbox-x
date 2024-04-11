@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug SDL2|ARM">
@@ -1189,6 +1189,7 @@ for /d %%i in ("$(SolutionDir)\..\contrib\translations\*") do copy "%%i\*.lng" "
     <ClCompile Include="..\src\gui\zipcrc.c" />
     <ClCompile Include="..\src\gui\zipfile.cpp" />
     <ClCompile Include="..\src\hardware\8255.cpp" />
+    <ClCompile Include="..\src\hardware\c86ctl\c86ctlwrap.cpp" />
     <ClCompile Include="..\src\hardware\imfc.cpp" />
     <ClCompile Include="..\src\hardware\imfc_rom.c" />
     <ClCompile Include="..\src\hardware\mame\fmopl.cpp" />
@@ -1202,6 +1203,7 @@ for /d %%i in ("$(SolutionDir)\..\contrib\translations\*") do copy "%%i\*.lng" "
     <ClCompile Include="..\src\hardware\serialport\serialfile.cpp" />
     <ClCompile Include="..\src\hardware\snd_pc98\cbus\board26k.c" />
     <ClCompile Include="..\src\hardware\snd_pc98\cbus\board86.c" />
+    <ClCompile Include="..\src\hardware\snd_pc98\cbus\board_ext.cpp" />
     <ClCompile Include="..\src\hardware\snd_pc98\cbus\pcm86io.c" />
     <ClCompile Include="..\src\hardware\snd_pc98\common\parts.c" />
     <ClCompile Include="..\src\hardware\snd_pc98\generic\keydisp.c" />
@@ -1817,6 +1819,8 @@ for /d %%i in ("$(SolutionDir)\..\contrib\translations\*") do copy "%%i\*.lng" "
     <ClInclude Include="..\src\gui\render_templates_sai.h" />
     <ClInclude Include="..\src\hardware\adlib.h" />
     <ClInclude Include="..\src\hardware\c86ctl\c86ctl.h" />
+    <ClInclude Include="..\src\hardware\c86ctl\c86ctlwrap.h" />
+    <ClInclude Include="..\src\hardware\c86ctl\cbus_boardtype.h" />
     <ClInclude Include="..\src\hardware\dbopl.h" />
     <ClInclude Include="..\src\hardware\esfmu\esfm.h" />
     <ClInclude Include="..\src\hardware\hardopl.h" />
@@ -1857,6 +1861,7 @@ for /d %%i in ("$(SolutionDir)\..\contrib\translations\*") do copy "%%i\*.lng" "
     <ClInclude Include="..\src\hardware\serialport\softmodem.h" />
     <ClInclude Include="..\src\hardware\snd_pc98\cbus\board26k.h" />
     <ClInclude Include="..\src\hardware\snd_pc98\cbus\board86.h" />
+    <ClInclude Include="..\src\hardware\snd_pc98\cbus\board_ext.h" />
     <ClInclude Include="..\src\hardware\snd_pc98\cbus\pcm86io.h" />
     <ClInclude Include="..\src\hardware\snd_pc98\common\parts.h" />
     <ClInclude Include="..\src\hardware\snd_pc98\common\profile.h" />

@@ -1332,6 +1332,7 @@ void DOSBOX_SetupConfigSections(void) {
     const char* truefalseautoopt[] = { "true", "false", "1", "0", "auto", 0};
     const char* truefalsequietopts[] = { "true", "false", "1", "0", "quiet", 0 };
     const char* pc98fmboards[] = { "auto", "off", "false", "board14", "board26k", "board86", "board86c", 0};
+    const char* pc98fmemus[] = { "default", "c86ctl", 0 };
     const char* pc98videomodeopt[] = { "", "24khz", "31khz", "15khz", 0};
     const char* aspectmodes[] = { "false", "true", "0", "1", "yes", "no", "nearest", "bilinear", 0};
     const char *vga_ac_mapping_settings[] = { "", "auto", "4x4", "4low", "first16", 0 };
@@ -2111,6 +2112,11 @@ void DOSBOX_SetupConfigSections(void) {
     Pstring = secprop->Add_string("pc-98 fm board",Property::Changeable::Always,"auto");
     Pstring->Set_values(pc98fmboards);
     Pstring->Set_help("In PC-98 mode, selects the FM music board to emulate.");
+    Pstring->SetBasic(true);
+
+    Pstring = secprop->Add_string("pc-98 fm emu", Property::Changeable::WhenIdle, "default");
+    Pstring->Set_values(pc98fmemus);
+    Pstring->Set_help("Provider for the PC-98 FMBoard emulation.");
     Pstring->SetBasic(true);
 
     Pint = secprop->Add_int("pc-98 fm board irq", Property::Changeable::WhenIdle,0);
